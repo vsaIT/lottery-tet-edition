@@ -3,6 +3,7 @@ import './App.css';
 import { SlotMachine } from '@lucky-canvas/react';
 import Reward from 'react-rewards';
 import { CornerPiece } from './CornerPiece';
+import Swal from 'sweetalert2';
 
 const initialState = {
   blocks: [
@@ -43,7 +44,7 @@ const App = () => {
     slotMachine.current.stop(index);
     setTimeout(() => reward.current.rewardMe(), 2550);
     setLastWon(index);
-    console.log(index, state.prizes[index].name);
+    console.log(index, state.prizes[index]);
   };
   const addPrize = (event) => {
     event.preventDefault();
@@ -79,16 +80,6 @@ const App = () => {
         spin();
       }
     });
-    return;
-    for (let i = 1; i <= 30; i++) {
-      const prize = {
-        name: i + '',
-        fonts: [{ text: 'bob', top: '43%' }],
-        background: '#F2CF76',
-        borderRadius: '25px',
-      };
-      state.prizes.push(prize);
-    }
   }, []);
   return (
     <>
