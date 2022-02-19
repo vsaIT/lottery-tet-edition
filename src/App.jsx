@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import './App.css';
 import { SlotMachine } from '@lucky-canvas/react';
 import Reward from 'react-rewards';
@@ -11,27 +11,8 @@ const initialState = {
     { padding: '10px', background: '#E86A6A', borderRadius: '40px' },
     { padding: '20px 0px', background: '#FEA0A0', borderRadius: '25px' },
   ],
-  prizes: [
-    {
-      name: 'jonny',
-      fonts: [{ text: 'Jonny', top: '43%' }],
-      background: '#F2CF76',
-      borderRadius: '25px',
-    },
-    {
-      name: 'eline',
-      fonts: [{ text: 'Eline', top: '43%' }],
-      background: '#F2CF76',
-      borderRadius: '25px',
-    },
-    {
-      name: 'kelvin',
-      fonts: [{ text: 'Kelvin', top: '43%' }],
-      background: '#F2CF76',
-      borderRadius: '25px',
-    },
-  ],
-  slots: [{ order: [0, 1, 2, 0, 0], direction: -1 }],
+  prizes: [],
+  slots: [{ order: [], direction: -1 }],
   defaultConfig: { mode: 'horizontal', rowSpacing: '10px', colSpacing: '10px' },
 };
 
@@ -49,14 +30,11 @@ const App = () => {
     // Delete order from slot lastwin
     if (lastWon > -1) {
       for (let i = 0; i < state.slots[0].order.length; i++) {
-        if (state.slots[0].order[i] === lastWon)
-          state.slots[0].order.splice(i, 1);
-      }
-      for (let i = 0; i < state.slots[0].order.length; i++) {
-        if (state.slots[0].order[i] === lastWon)
+        if (state.slots[0].order[i] == lastWon)
           state.slots[0].order.splice(i, 1);
       }
     }
+    console.log(state.slots[0].order, lastWon);
     slotMachine.current.play();
   };
   const spin = () => {
@@ -93,6 +71,25 @@ const App = () => {
     setShow2(!show2);
     console.log('b', show2);
   };
+  useEffect(() => {
+    document.addEventListener('keyup', function (event) {
+      if (event.key === '+') {
+        start();
+      } else if (event.key === '-') {
+        spin();
+      }
+    });
+    return;
+    for (let i = 1; i <= 30; i++) {
+      const prize = {
+        name: i + '',
+        fonts: [{ text: 'bob', top: '43%' }],
+        background: '#F2CF76',
+        borderRadius: '25px',
+      };
+      state.prizes.push(prize);
+    }
+  }, []);
   return (
     <>
       <div className="reward">
@@ -154,14 +151,17 @@ const App = () => {
           </form>
         </div>
       </div>
-      <div className="formWrapper down" hidden={show2}>
+      <div
+        className="formWrapper down"
+        style={{ display: show2 ? 'grid' : 'none' }}
+      >
         {state.prizes.map((prize, index) => {
           const name = prize.fonts[0].text;
-          const count = state.slots[0].order.filter((o) => o === index).length;
+          const count = state.slots[0].order.filter((i) => i === index).length;
           return (
-            <div className="info">
+            <div className="info" key={index}>
               <p>
-                ({prize.name}) {name} {count}
+                ({prize.name}) {name} - {count}
               </p>
             </div>
           );

@@ -514,6 +514,23 @@ body {
 .down {
   transform: translate(-50%, 100%);
 }
-.info {
+.down {
+  width: 60%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0 auto;
+  justify-items: center;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background-color: var(--accent);
+  border-radius: 20px;
+  padding: 30px;
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+.info p {
   text-align: center;
+  display: inline-block;
+  margin: 0;
+  padding: 0;
 }
