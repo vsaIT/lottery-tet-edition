@@ -427,7 +427,7 @@ body {
   padding: 50px;
   width: 100vw;
   height: 100vh;
-  background: url(./bg.png);
+  background: url(/bg.png);
   background-position: 0 0;
   background-size: cover;
   background-blend-mode: screen;
