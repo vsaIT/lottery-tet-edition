@@ -427,7 +427,7 @@ body {
   padding: 50px;
   width: 100vw;
   height: 100vh;
-  background: url(/bg.png);
+  background: url(/bg2.png);
   background-position: 0 0;
   background-size: cover;
   background-blend-mode: screen;
@@ -481,17 +481,34 @@ body {
 }
 .formWrapper {
   position: absolute;
-  width: 100%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, 40%);
+  width: 500px;
+  max-width: 500px;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: #510f0f;
+  transition: all 0.6s;
+  overflow: hidden;
+  z-index: 100000;
+  box-shadow: 0 0 20px #111;
+}
+.formWrapper.hidden {
+  max-width: 0;
+}
+form input {
+  width: 90%;
+}
+hr {
+  filter: brightness(0.8);
+  opacity: 0.3;
+  width: 90%;
 }
 .buttonWrapper {
   display: flex;
   justify-content: center;
   text-align: center;
   align-items: center;
-  width: 60%;
+  width: 90%;
   margin: 0 auto;
   grid-gap: 10px;
 }
@@ -528,9 +545,33 @@ body {
   z-index: 10;
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
+.names {
+  display: flex;
+  flex-direction: column;
+}
+.info {
+  width: 90%;
+  margin: 0 auto;
+  background: #751818;
+  padding: 2px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 5px;
+}
 .info p {
   text-align: center;
   display: inline-block;
   margin: 0;
   padding: 0;
+}
+.btnwrappers button {
+  width: 35px;
+  height: 35px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+.btnadd {
+  margin-right: 10px;
 }

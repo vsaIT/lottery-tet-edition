@@ -7,25 +7,29 @@ import Swal from 'sweetalert2';
 
 const initialState = {
   blocks: [
-    { padding: '10px', background: '#E83939', borderRadius: '10px' },
-    { padding: '10px', background: '#F15454', borderRadius: '20px' },
-    { padding: '10px', background: '#E86A6A', borderRadius: '40px' },
-    { padding: '20px 0px', background: '#FEA0A0', borderRadius: '25px' },
+    { padding: '10px', background: '#3e0707', borderRadius: '10px' },
+    { padding: '10px', background: '#3e0707', borderRadius: '20px' },
+    { padding: '10px', background: '#510f0f', borderRadius: '10px' },
+    { padding: '20px 0px', background: '#3e0707', borderRadius: '25px' },
   ],
   prizes: [],
   slots: [{ order: [], direction: -1 }],
-  defaultConfig: { mode: 'horizontal', rowSpacing: '10px', colSpacing: '10px' },
+  defaultConfig: {
+    mode: 'horizontal',
+    rowSpacing: '10px',
+    colSpacing: '10px',
+    decelerationTime: 10000,
+  },
 };
 
 const App = () => {
-  const [state, setState] = useState(initialState);
+  const [state, _setState] = useState(initialState);
   const slotMachine = useRef(null);
   const reward = useRef(null);
-  const [id, setId] = useState('');
   const [name, setName] = useState('');
   const [lastWon, setLastWon] = useState(-1);
   const [show1, setShow1] = useState(true);
-  const [show2, setShow2] = useState(false);
+  const [rerender, setRerender] = useState(true);
 
   const start = () => {
     // Delete order from slot lastwin
@@ -38,49 +42,46 @@ const App = () => {
     console.log(state.slots[0].order, lastWon);
     slotMachine.current.play();
   };
+
+  window.test = slotMachine.current;
+
   const spin = () => {
     const slots = state.slots[0].order;
     const index = slots[(Math.random() * slots.length) >> 0];
     slotMachine.current.stop(index);
-    setTimeout(() => reward.current.rewardMe(), 2550);
     setLastWon(index);
     console.log(index, state.prizes[index]);
   };
+
   const addPrize = (event) => {
     event.preventDefault();
     const prize = {
-      name: id,
+      name: String(Math.random()),
       fonts: [{ text: name, top: '43%' }],
       background: '#F2CF76',
       borderRadius: '25px',
     };
-    const dup = state.prizes.map(({ name }) => name).indexOf(id);
     let index = state.prizes.length;
-    if (dup == -1) {
-      state.prizes.push(prize);
-    } else {
-      index = dup;
-    }
+    state.prizes.push(prize);
     state.slots[0].order.push(index);
     console.log(prize, state.prizes, state.slots[0].order);
+    setRerender(!rerender);
   };
+
   const toggle1 = () => {
     setShow1(!show1);
-    console.log('a', show1);
   };
-  const toggle2 = () => {
-    setShow2(!show2);
-    console.log('b', show2);
-  };
+
   useEffect(() => {
     document.addEventListener('keyup', function (event) {
       if (event.key === '+') {
-        start();
-      } else if (event.key === '-') {
-        spin();
+        start(); // Roll the spinner
+      } else if (event.key === '0') {
+        spin(); // Choose a winner
       }
     });
   }, []);
+
   return (
     <>
       <div className="reward">
@@ -93,7 +94,7 @@ const App = () => {
             decay: 0.94,
             spread: 90,
             startVelocity: 35,
-            elementCount: 60,
+            elementCount: 80,
             elementSize: 8,
             zIndex: 10,
             springAnimation: true,
@@ -112,24 +113,18 @@ const App = () => {
             slots={state.slots}
             defaultConfig={state.defaultConfig}
             onEnd={(prize) => {
-              console.log(prize);
+              console.log(prize, 123);
+              setTimeout(() => reward.current.rewardMe(), 100);
             }}
           ></SlotMachine>
         </div>
-        <div className="formWrapper" hidden={show1}>
+        <div className={`formWrapper ${show1 ? 'hidden' : ''}`}>
           <div className="buttonWrapper">
             <button onClick={start}>Start</button>
             <button onClick={spin}>Stop</button>
           </div>
+          <hr />
           <form onSubmit={addPrize} className="form">
-            <label>
-              <input
-                type="text"
-                value={id}
-                placeholder="ID"
-                onChange={(ev) => setId(ev.target.value)}
-              />
-            </label>
             <label>
               <input
                 type="text"
@@ -140,23 +135,51 @@ const App = () => {
             </label>
             <input type="submit" value="Add lottery" />
           </form>
+          <div className="names">
+            {state.prizes.map((prize, index) => {
+              const name = prize.fonts[0].text;
+              const count = state.slots[0].order.filter(
+                (i) => i === index,
+              ).length;
+              return (
+                <div className="info" key={index}>
+                  <p id={prize.name}>
+                    {name} - {count}
+                  </p>
+                  <div className="btnwrappers">
+                    <button
+                      className="btnadd"
+                      onClick={() => {
+                        const index = state.prizes
+                          .map(({ name }) => name)
+                          .indexOf(prize.name);
+                        state.slots[0].order.push(index);
+                        setRerender(!rerender);
+                      }}
+                    >
+                      +
+                    </button>
+                    <button
+                      className="btnminus"
+                      onClick={() => {
+                        const index = state.prizes
+                          .map(({ name }) => name)
+                          .indexOf(prize.name);
+                        const pos = state.slots[0].order.indexOf(index);
+                        if (pos >= 0) {
+                          state.slots[0].order.splice(pos, 1);
+                        }
+                        setRerender(!rerender);
+                      }}
+                    >
+                      -
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
-      </div>
-      <div
-        className="formWrapper down"
-        style={{ display: show2 ? 'grid' : 'none' }}
-      >
-        {state.prizes.map((prize, index) => {
-          const name = prize.fonts[0].text;
-          const count = state.slots[0].order.filter((i) => i === index).length;
-          return (
-            <div className="info" key={index}>
-              <p>
-                ({prize.name}) {name} - {count}
-              </p>
-            </div>
-          );
-        })}
       </div>
       <img src="./pick.png" alt="Scroll pick" className="pick" />
       <CornerPiece className="corner topleft" />
@@ -165,7 +188,6 @@ const App = () => {
       <CornerPiece className="corner bottomright" />
       <div className="topButton">
         <button onClick={() => toggle1()}></button>
-        <button onClick={() => toggle2()}></button>
       </div>
     </>
   );
